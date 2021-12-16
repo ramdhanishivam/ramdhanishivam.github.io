@@ -64,6 +64,16 @@
     background-color: #90ee9038;
     outline: 0;
   }
+
+  /*.AdminTableBodyRow:nth-child(n+10){
+    display:none;
+  }*/
+
+  .pagination {
+    margin-left: 50%;
+    margin-top: -30px;
+  }
+
 </style>
 <script>
 async function getapi() {
@@ -77,12 +87,14 @@ async function getapi() {
   var admin = data;
   for (var data of admin) {
     create_row(data);
-  } 
+  }
+  create_pagination();
 }
 
 function create_row(data) {
   let adminRow = document.createElement('tr')
-  adminRow.className = 'AdminTableBodyRow'
+  adminRow.className = 'AdminTableBodyRow';
+  adminRow.id = `row${data.id}`
   let checkbox = document.createElement('input')
   checkbox.type = 'checkbox';
   checkbox.value = data.name;
@@ -129,6 +141,7 @@ function edit_row(event) {
 
 function searchTableElements(argument) {
   var input, filter, admin_table, table_row, name_data, email_data, role_data;
+  var available_elements_count = 0;
   var nameValue, emailValue, roleValue;
   input = document.getElementById("searchInput");
   filter = input.value;
@@ -146,31 +159,71 @@ function searchTableElements(argument) {
       roleValue = role_data.innerText || role_data.textContent;
       if (nameValue.indexOf(filter) > -1 || emailValue.indexOf(filter) > -1 || roleValue.indexOf(filter) > -1) {
         table_row[i].style.display = "";
+        available_elements_count += 1;
+        create_pagination(available_elements_count);
       } else {
         table_row[i].style.display = "none";
       }
     }
   }
+  console.log(available_elements_count);
 
 }
 
+function create_pagination(available_elements_count) {
+  admin_table = document.getElementById('Admin_Table')
+  table_row = admin_table.getElementsByTagName('tr');
+  available_elements_count = Math.ceil(available_elements_count/10) || Math.ceil(table_row.length/10);
+  document.getElementById('pagination').innerHTML = '';
+
+  for (var i = 1; i < available_elements_count; i++) {
+    let page_index = document.createElement('button');
+    page_index.innerText = i;
+    page_index.id = `pageCount${i}`;
+    let space = document.createElement('span');
+    space.innerHTML = ' ';
+    document.getElementById('pagination').append(page_index, space);
+  }
+}
+
+document.addEventListener('click',function(event){
+  let pageNumber = event.target.id;
+  let page =  pageNumber.includes('pageCount');
+  let admin_table = document.getElementById('Admin_Table')
+  let table_row = admin_table.getElementsByTagName('tr');
+  let start = pageNumber.charAt(9) == 1 ? 1 : Number(`${pageNumber.charAt(9)}0`);
+  let end = start + 10;
+  if (page) {
+    for (let i = 0; i < table_row.length; i++) {
+      if( i >= start && i <= end) {
+        debugger;
+        table_row[i].style.display = "";
+      } else {
+        table_row[i].style.display = "none";
+      }
+    }
+  }
+ });
 </script>
 </head>
-<body onload="getapi()">
+<body onload="getapi();">
 
   <input type="text" id="searchInput" onkeyup="searchTableElements()" placeholder="Search by names, email or role." title="Type in a name, email or role.">
 
   <table id="Admin_Table">
     <tr id="column_names">
       <th><input type="checkbox" id="select_all_checkbox" onclick="select_all_checkbox()"></th>
-      <th contenteditable>Name</th>
+      <th>Name</th>
       <th>Email</th>
       <th>Role</th>
       <th>Action</th>
     </tr>
   </table>
-
-  <button onclick="delete_seleted_row()" class="delete_row_button">Delete Selected</button>
+  <span>
+    <button onclick="delete_seleted_row()" class="delete_row_button">Delete Selected</button>
+    <div id="pagination"></div>
+  </span>
+  
 
 </body>
 </html>
