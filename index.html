@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<head>
+<style>
+
+  #searchInput {
+    background-image: url('/css/searchicon.png');
+    background-position: 10px 12px;
+    background-repeat: no-repeat;
+    width: 80%;
+    margin-left: 10%;
+    font-size: 16px;
+    padding: 12px 20px 12px 40px;
+    border: 1px solid #ddd;
+    margin-bottom: 12px;
+  }
+  table {
+    font-family: arial, sans-serif;
+    width: 80%;
+    margin-left: 10%;
+  }
+
+  td, th {
+    text-align: left;
+    padding: 8px;
+  }
+
+  h2 {
+    margin-left: 20px;
+  }
+
+  .delete_row_button {
+    background-color: Tomato;
+    border: none;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 145px;
+    border-radius: 10px;
+  }
+  input[type="checkbox"]{
+    height: 20px;
+    width: 20px;
+    background-color: #eee;
+    margin-left: 20px;
+    margin-top: 9px;
+  }
+
+  #select_all_checkbox{
+    margin-left: 12px;
+  }
+
+  .AdminTableBodyRow, #column_names {
+    border: 1px solid #ddd;
+  }
+
+  .AdminTableBodyRow:hover {
+    background-color: #90ee9038;
+    outline: 0;
+  }
+</style>
+<script>
+async function getapi() {
+
+  // Storing response
+  const response = await fetch('https://geektrust.s3-ap-southeast-1.amazonaws.com/adminui-problem/members.json');
+
+  // Storing data in form of JSON
+  var data = await response.json();
+
+  var admin = data;
+  for (var data of admin) {
+    create_row(data);
+  } 
+}
+
+function create_row(data) {
+  let adminRow = document.createElement('tr')
+  adminRow.className = 'AdminTableBodyRow'
+  let checkbox = document.createElement('input')
+  checkbox.type = 'checkbox';
+  checkbox.value = data.name;
+  checkbox.name = 'delete_row';
+  checkbox.id = data.id;
+  let email = document.createElement('td')
+  email.innerText = data.email
+  let name = document.createElement('td')
+  name.innerText = data.name
+  let role = document.createElement('td')
+  role.innerText = data.role;
+  let action = document.createElement('td')
+  action.innerHTML = `<span id=edit_row_${data.id} class="glyphicon glyphicon-edit" onclick="edit_row(event)"><span>&emsp;</span></span><span id=delete_row_${data.id} class="glyphicon glyphicon-trash" onclick="delete_row(event)"></span>`;
+  adminRow.append(checkbox, name, email, role, action);
+  document.getElementById('Admin_Table').append(adminRow);
+}
+
+function delete_seleted_row() {
+  let checkedInputs = document.querySelectorAll("input[type='checkbox']:checked");
+  Array.prototype.slice.call(checkedInputs)
+  .forEach( input => delete_only_row(input));
+}
+
+function delete_only_row(input) {
+  if(input.parentNode.nodeName == 'TR') {
+    input.parentNode.remove();
+  }
+}
+
+function select_all_checkbox() {
+  let select_checkboxes = document.querySelectorAll("input[type='checkbox']");
+  Array.prototype.slice.call(select_checkboxes)
+  .forEach( input => input.checked = select_checkboxes[0].checked);
+}
+
+function delete_row(event) {
+  event.target.parentNode.parentNode.remove();
+}
+
+function edit_row(event) {
+  var data_collection = event.target.parentNode.parentNode.getElementsByTagName('td')
+  Array.from(data_collection).forEach(element => element.setAttribute('contentEditable', 'true'));
+}
+
+function searchTableElements(argument) {
+  var input, filter, admin_table, table_row, name_data, email_data, role_data;
+  var nameValue, emailValue, roleValue;
+  input = document.getElementById("searchInput");
+  filter = input.value;
+  admin_table = document.getElementById('Admin_Table')
+  table_row = admin_table.getElementsByTagName('tr');
+
+  for (var i = 0; i < table_row.length; i++) {
+    name_data = table_row[i].getElementsByTagName('td')[0];
+    email_data = table_row[i].getElementsByTagName('td')[1];
+    role_data = table_row[i].getElementsByTagName('td')[2];
+    
+    if (name_data || email_data || role_data) {
+      nameValue = name_data.innerText || name_data.textContent;
+      emailValue = email_data.innerText || email_data.textContent;
+      roleValue = role_data.innerText || role_data.textContent;
+      if (nameValue.indexOf(filter) > -1 || emailValue.indexOf(filter) > -1 || roleValue.indexOf(filter) > -1) {
+        table_row[i].style.display = "";
+      } else {
+        table_row[i].style.display = "none";
+      }
+    }
+  }
+
+}
+
+</script>
+</head>
+<body onload="getapi()">
+
+  <input type="text" id="searchInput" onkeyup="searchTableElements()" placeholder="Search by names, email or role." title="Type in a name, email or role.">
+
+  <table id="Admin_Table">
+    <tr id="column_names">
+      <th><input type="checkbox" id="select_all_checkbox" onclick="select_all_checkbox()"></th>
+      <th contenteditable>Name</th>
+      <th>Email</th>
+      <th>Role</th>
+      <th>Action</th>
+    </tr>
+  </table>
+
+  <button onclick="delete_seleted_row()" class="delete_row_button">Delete Selected</button>
+
+</body>
+</html>
+
