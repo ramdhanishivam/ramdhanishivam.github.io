@@ -65,13 +65,14 @@
     outline: 0;
   }
 
-  /*.AdminTableBodyRow:nth-child(n+10){
+  .AdminTableBodyRow:nth-child(n+12){
     display:none;
-  }*/
+  }
 
-  .pagination {
-    margin-left: 50%;
-    margin-top: -30px;
+  #pagination {
+    position: relative;
+    left: 45%;
+    margin-top: -35px;
   }
 
 </style>
@@ -139,7 +140,7 @@ function edit_row(event) {
   Array.from(data_collection).forEach(element => element.setAttribute('contentEditable', 'true'));
 }
 
-function searchTableElements(argument) {
+function searchTableElements() {
   var input, filter, admin_table, table_row, name_data, email_data, role_data;
   var available_elements_count = 0;
   var nameValue, emailValue, roleValue;
@@ -158,7 +159,7 @@ function searchTableElements(argument) {
       emailValue = email_data.innerText || email_data.textContent;
       roleValue = role_data.innerText || role_data.textContent;
       if (nameValue.indexOf(filter) > -1 || emailValue.indexOf(filter) > -1 || roleValue.indexOf(filter) > -1) {
-        table_row[i].style.display = "";
+        table_row[i].style.display = "table-row";
         available_elements_count += 1;
         create_pagination(available_elements_count);
       } else {
@@ -166,8 +167,6 @@ function searchTableElements(argument) {
       }
     }
   }
-  console.log(available_elements_count);
-
 }
 
 function create_pagination(available_elements_count) {
@@ -194,10 +193,10 @@ document.addEventListener('click',function(event){
   let start = pageNumber.charAt(9) == 1 ? 1 : Number(`${pageNumber.charAt(9)}0`);
   let end = start + 10;
   if (page) {
-    for (let i = 0; i < table_row.length; i++) {
-      if( i >= start && i <= end) {
+    for (let i = 1; i < table_row.length; i++) {
+      if( i >= start && i < end) {
         debugger;
-        table_row[i].style.display = "";
+        table_row[i].style.display = "table-row";
       } else {
         table_row[i].style.display = "none";
       }
