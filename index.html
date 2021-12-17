@@ -166,6 +166,8 @@ function searchTableElements() {
         create_pagination(available_elements_count);
         if (displayRows.length <= 10) {
           table_row[i].style.display = "table-row";
+        } else {
+          table_row[i].style.display = "none";
         }
       } else {
         hideRows.push(table_row[i].id)
@@ -198,32 +200,32 @@ document.addEventListener('click',function(event){
   let page =  pageNumber.includes('pageCount');
   let admin_table = document.getElementById('Admin_Table')
   let table_row = admin_table.getElementsByTagName('tr');
-  if (searchedValue == '') {
+  if (searchedValue == '' && page) {
     let pageStart = pageNumber.charAt(9) - 1;
     let start = pageNumber.charAt(9) == 1 ? 1 : Number(`${pageStart}1`) ;
     let end = start + 10;
-    if (page) {
-      for (let i = 1; i < table_row.length; i++) {
-        if( i >= start && i < end) {
-          table_row[i].style.display = "table-row";
-        } else {
-          table_row[i].style.display = "none";
-        }
+    for (let i = 1; i < table_row.length; i++) {
+      if( i >= start && i < end) {
+        table_row[i].style.display = "table-row";
+      } else {
+        table_row[i].style.display = "none";
       }
     }
   } else {
-    let show = searchTableElements();
-    let pageStart = pageNumber.charAt(9) - 1;
-    let show_start = pageNumber.charAt(9) == 1 ? 1 : Number(`${pageStart}1`) ;
-    let show_end = show_start + 10;
-    for (var i = 1; i < table_row.length; i++) {
-      if (i >= show_start && i < show_end && show.displayRows[i]) {
-        document.getElementById(show.displayRows[i]).style.display = "table-row";
-      } else if ( (i < show_start || i > show_end) && show.displayRows[i]) {
-        document.getElementById(show.displayRows[i]).style.display = "none";
-      } else {
-        if (show.hideRows[i]) {
-          document.getElementById(show.hideRows[i]).style.display = "none";
+    if (page) {
+      let show = searchTableElements();
+      let pageStart = pageNumber.charAt(9) - 1;
+      let show_start = pageNumber.charAt(9) == 1 ? 1 : Number(`${pageStart}1`) ;
+      let show_end = show_start + 10;
+      for (var i = 1; i < table_row.length; i++) {
+        if (i >= show_start && i < show_end && show.displayRows[i]) {
+          document.getElementById(show.displayRows[i]).style.display = "table-row";
+        } else if ( (i < show_start || i > show_end) && show.displayRows[i]) {
+          document.getElementById(show.displayRows[i]).style.display = "none";
+        } else {
+          if (show.hideRows[i]) {
+            document.getElementById(show.hideRows[i]).style.display = "none";
+          }
         }
       }
     }
