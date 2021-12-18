@@ -217,7 +217,7 @@ document.addEventListener('click',function(event){
       let pageStart = pageNumber.charAt(9) - 1;
       let show_start = pageNumber.charAt(9) == 1 ? 1 : Number(`${pageStart}1`) ;
       let show_end = show_start + 10;
-      for (var i = 1; i < table_row.length; i++) {
+      for (var i = 0; i < table_row.length; i++) {
         if (i >= show_start && i < show_end && show.displayRows[i]) {
           document.getElementById(show.displayRows[i]).style.display = "table-row";
         } else if ( (i < show_start || i > show_end) && show.displayRows[i]) {
