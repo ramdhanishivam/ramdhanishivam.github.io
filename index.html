@@ -127,7 +127,7 @@ function delete_only_row(input) {
 
 function select_all_checkbox() {
   let select_checkboxes = document.querySelectorAll("input[type='checkbox']");
-  Array.prototype.slice.call(select_checkboxes)
+  Array.prototype.slice.call(select_checkboxes).slice(0, 11)
   .forEach( input => input.checked = select_checkboxes[0].checked);
 }
 
@@ -215,7 +215,7 @@ document.addEventListener('click',function(event){
     if (page) {
       let show = searchTableElements();
       let pageStart = pageNumber.charAt(9) - 1;
-      let show_start = pageNumber.charAt(9) == 1 ? 1 : Number(`${pageStart}1`) ;
+      let show_start = pageNumber.charAt(9) == 1 ? 0 : Number(`${pageStart}1`) ;
       let show_end = show_start + 10;
       for (var i = 0; i < table_row.length; i++) {
         if (i >= show_start && i < show_end && show.displayRows[i]) {
